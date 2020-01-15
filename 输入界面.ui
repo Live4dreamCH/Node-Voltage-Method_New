@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>800</width>
+    <height>600</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>800</width>
+    <height>600</height>
+   </size>
+  </property>
+  <property name="font">
+   <font>
+    <pointsize>15</pointsize>
+   </font>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QLabel" name="putin_help">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>221</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>请输入电路元件：（SI）</string>
+    </property>
+   </widget>
+   <widget class="Line" name="centual_line">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>0</y>
+      <width>20</width>
+      <height>541</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Vertical</enum>
+    </property>
+   </widget>
+   <widget class="QSplitter" name="contral_aplt_2">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>70</y>
+      <width>371</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+    <widget class="QLabel" name="ctrlfrom_help_2">
+     <property name="text">
+      <string>ctrl_from：</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="ctrlfrom_in_2"/>
+    <widget class="QLabel" name="ctrlto_help_2">
+     <property name="text">
+      <string>ctrl_to：</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="ctrlto_in_2"/>
+   </widget>
+   <widget class="QSplitter" name="elemhelp_splt_2">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>10</y>
+      <width>371</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+    <widget class="QLabel" name="label_7">
+     <property name="text">
+      <string>元件类型：</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_8">
+     <property name="text">
+      <string>值/系数：</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_9">
+     <property name="text">
+      <string>from：</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_10">
+     <property name="text">
+      <string>to：</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QSplitter" name="button_splt_2">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>100</y>
+      <width>371</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+    <widget class="QPushButton" name="addmore_bt_2">
+     <property name="text">
+      <string>继续添加</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="stopputin_bt_2">
+     <property name="text">
+      <string>输入完成</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QSplitter" name="elemin_splt_2">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>40</y>
+      <width>371</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+    <widget class="QComboBox" name="classchoose_box_2"/>
+    <widget class="QLineEdit" name="value_in_2"/>
+    <widget class="QLineEdit" name="from_in_2"/>
+    <widget class="QLineEdit" name="to_in_2"/>
+   </widget>
+   <widget class="QSplitter" name="node_splt">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>30</y>
+      <width>281</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+    <widget class="QLabel" name="node_help">
+     <property name="text">
+      <string>节点数：</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="node_in"/>
+   </widget>
+   <widget class="QSplitter" name="elemhelp_splt">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>70</y>
+      <width>371</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>元件类型：</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_4">
+     <property name="text">
+      <string>值/系数：</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_5">
+     <property name="text">
+      <string>from：</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_6">
+     <property name="text">
+      <string>to：</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QSplitter" name="elemin_splt">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>100</y>
+      <width>371</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+    <widget class="QComboBox" name="classchoose_box"/>
+    <widget class="QLineEdit" name="value_in"/>
+    <widget class="QLineEdit" name="from_in"/>
+    <widget class="QLineEdit" name="to_in"/>
+   </widget>
+   <widget class="QSplitter" name="contral_aplt">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>130</y>
+      <width>371</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+    <widget class="QLabel" name="ctrlfrom_help">
+     <property name="text">
+      <string>ctrl_from：</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="ctrlfrom_in"/>
+    <widget class="QLabel" name="ctrlto_help">
+     <property name="text">
+      <string>ctrl_to：</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="ctrlto_in"/>
+   </widget>
+   <widget class="QSplitter" name="button_splt">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>160</y>
+      <width>371</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+    <widget class="QPushButton" name="addmore_bt">
+     <property name="text">
+      <string>继续添加</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="stopputin_bt">
+     <property name="text">
+      <string>输入完成</string>
+     </property>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>9</pointsize>
+    </font>
+   </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>帮助</string>
+    </property>
+    <addaction name="actionhelp"/>
+   </widget>
+   <addaction name="menu"/>
+  </widget>
+  <action name="actionhelp">
+   <property name="text">
+    <string>help</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
