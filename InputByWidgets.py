@@ -40,6 +40,7 @@ class WidgetWindow(object):
     def __init__(self, MainWindow):
         """把刚开始的控件全部放到主界面上去"""
 
+        self.node_num = int()
         self.elements = list()
         '记录电路元件信息'
         self.widgets = list()
@@ -130,7 +131,7 @@ class WidgetWindow(object):
         self.button_splt.setObjectName("button_splt")
         self.addmore_bt = QtWidgets.QPushButton(self.button_splt)
         self.addmore_bt.setObjectName("addmore_bt")
-        self.addmore_bt.clicked.connect(self.try_addmore)
+        self.addmore_bt.clicked.connect(self.try_add_more)
 
         self.stopputin_bt = QtWidgets.QPushButton(self.button_splt)
         self.stopputin_bt.setObjectName("stopputin_bt")
@@ -189,14 +190,14 @@ class WidgetWindow(object):
             self.button_splt.move(self.current_x, self.current_y + 60)
         self.this_elem[0] = text
 
-    def try_addmore(self):
+    def try_add_more(self):
         try:
-            self.addmore()
+            self.add_more()
         except ValueError as reason:
-            my_message_box('数值输错了！', '详细信息：'+str(reason))
+            my_message_box('数值输错了！', '详细信息：' + str(reason))
             self.this_elem = [self.this_elem[0]]
 
-    def addmore(self):
+    def add_more(self):
         """读取当前元件的数据，并添加新控件"""
         self.node_num = int(self.node_in.text())
         for i in range(2, 5):
@@ -204,7 +205,7 @@ class WidgetWindow(object):
         if self.this_elem[0] in ['CCCS', 'VCCS', 'VCVS', 'CCVS']:
             self.this_elem.append(float(self.current_wgt[5].text()))
             self.this_elem.append(float(self.current_wgt[6].text()))
-        if self.warnings():
+        if self.warnings():  # 没有错误，正常执行
             print('这个元件：')
             print(self.this_elem)
             self.elements.append(self.this_elem)
@@ -214,7 +215,7 @@ class WidgetWindow(object):
             self.create_wgt()
             self.this_elem = [None]
         else:
-            self.this_elem = [self.this_elem[0]]
+            self.this_elem = [self.this_elem[0]]    # 有错误，保留第一项元件类型不变，其它项删掉，不新增输入控件，等待重新输入
 
     def create_wgt(self):
         """创建新控件"""
@@ -313,8 +314,8 @@ class WidgetWindow(object):
         try:
             self.stop()
         except ValueError as reason:
-            my_message_box('数值输错了！', '详细信息：'+str(reason))
-            # self.this_elem = [self.this_elem[0]]????????????????????????????????未完成
+            my_message_box('数值输错了！', '详细信息：' + str(reason))
+            self.this_elem = [self.this_elem[0]]
 
     def stop(self):
         """输入完成。把最后输入的一个元件的信息存储起来，隐藏输入界面，并打开展示界面"""
@@ -324,14 +325,17 @@ class WidgetWindow(object):
         if self.this_elem[0] in ['CCCS', 'VCCS', 'VCVS', 'CCVS']:
             self.this_elem.append(float(self.current_wgt[5].text()))
             self.this_elem.append(float(self.current_wgt[6].text()))
-        print('这个元件：')
-        print(self.this_elem)
-        self.elements.append(self.this_elem)
-        self.widgets.append(self.current_wgt)
-        print('结点个数： ' + str(self.node_num))
-        print('全部元件：')
-        print(self.elements)
-        self.this_win.hide()
+        if self.warnings():  # 没有错误，正常执行
+            print('这个元件：')
+            print(self.this_elem)
+            self.elements.append(self.this_elem)
+            self.widgets.append(self.current_wgt)
+            print('结点个数： ' + str(self.node_num))
+            print('全部元件：')
+            print(self.elements)
+            self.this_win.hide()
+        else:
+            self.this_elem = [self.this_elem[0]]  # 有错误，保留第一项元件类型不变，其它项删掉，不新增输入控件，等待重新输入
 
     def warnings(self):
         """针对可能出现的数值错误、输入错误等进行报错"""
@@ -347,10 +351,20 @@ class WidgetWindow(object):
             return my_message_box("此类元件的值不能为负数！", '详细信息：在本程序中，电阻、电导、电容、电感不能取负值。')
 
         if self.this_elem[2] not in range(0, self.node_num) or self.this_elem[3] not in range(0, self.node_num):
-            return my_message_box('元件所在结点数取值有误！', '元件所在结点应该为正整数，且在[0,n)中，其中n为总结点数。')
+            return my_message_box('元件所在结点数取值有误！', '详细信息：元件所在结点应该为正整数，且在[0,n)中，其中n为总结点数。')
 
-        if self.this_elem[4] not in range(0, self.node_num) or self.this_elem[5] not in range(0, self.node_num):
-            return my_message_box('元件控制量所在结点数取值有误！', '元件控制量所在结点应该为正整数，且在[0,n)中，其中n为总结点数。')
+        if self.this_elem[0] in ['CCCS', 'VCCS', 'VCVS', 'CCVS']:
+            if self.this_elem[4] not in range(0, self.node_num) or self.this_elem[5] not in range(0, self.node_num):
+                return my_message_box('元件控制量所在结点数取值有误！', '详细信息：元件控制量所在结点应该为正整数，且在[0,'
+                                                         'n)中，其中n为总结点数。')
+
+        if self.this_elem[2] == self.this_elem[3]:
+            return my_message_box('元件所在结点数对取值有误！', '详细信息：元件所在的两个结点数应该互不相同。')
+
+        if self.this_elem[0] in ['CCCS', 'VCCS', 'VCVS', 'CCVS']:
+            if self.this_elem[4] == self.this_elem[5]:
+                return my_message_box('元件控制量所在的结点数对取值有误！', '详细信息：元件控制量所在的两个结点数应该互不相同。')
+
         return True
 
 
@@ -363,8 +377,8 @@ if __name__ == '__main__':
     cgitb.enable()  # 用于GUI程序的调试
     app = QtWidgets.QApplication(sys.argv)  # 收集命令行的参数，为运行做准备
 
-    MainWindow = QtWidgets.QMainWindow()  # 它是程序所显示的主界面
-    ui = WidgetWindow(MainWindow)  # 实例化对象
-    MainWindow.show()  # 在屏幕上显示
+    mainWindow = QtWidgets.QMainWindow()  # 它是程序所显示的主界面
+    ui = WidgetWindow(mainWindow)  # 实例化对象
+    mainWindow.show()  # 在屏幕上显示
 
     sys.exit(app.exec_())  # 退出时把程序清理干净
