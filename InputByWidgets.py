@@ -41,9 +41,11 @@ class WidgetWindow(object):
         """把刚开始的控件全部放到主界面上去"""
 
         self.node_num = int()
+        self.final_elements = list()
         self.elements = list()
-        '记录电路元件信息'
+        '记录电路全部元件信息'
         self.widgets = list()
+        '全部控件'
         self.this_win = MainWindow
         '记住此主界面，后期添加新控件时使用'
         self.current_x = 10
@@ -101,7 +103,7 @@ class WidgetWindow(object):
 
         infomation = ['请选择元件', '电阻', '电导', '电流源', '电压源', 'CCCS', 'VCCS', 'VCVS', 'CCVS', "电容", "电感"]
         self.classchoose_box.addItems(infomation)
-        self.classchoose_box.activated[str].connect(self.type_choose)
+        self.classchoose_box.activated[str].connect(self.type_choose1)
 
         self.value_in = QtWidgets.QLineEdit(self.elemin_splt)
         self.value_in.setObjectName("value_in")
@@ -178,17 +180,16 @@ class WidgetWindow(object):
         self.menu.setTitle(_translate("MainWindow", "帮助"))
         self.actionhelp.setText(_translate("MainWindow", "help"))
 
-    def type_choose(self, text):
+    def type_choose1(self, text):
         # 选择元件类型，并删除不必要的输入框
 
         # infomation = ['电阻', '电导', '电流源', '电压源', 'CCCS', 'VCCS', 'VCVS', 'CCVS', "电容", "电感"]
         if text not in ['CCCS', 'VCCS', 'VCVS', 'CCVS']:
             self.current_wgt[0].hide()
-            self.button_splt.move(self.current_x, self.current_y + 30)
+            # self.button_splt.move(self.current_x, self.current_y + 30)
         else:
             self.current_wgt[0].show()
-            self.button_splt.move(self.current_x, self.current_y + 60)
-        self.this_elem[0] = text
+            # self.button_splt.move(self.current_x, self.current_y + 60)
 
     def try_add_more(self):
         try:
@@ -200,6 +201,7 @@ class WidgetWindow(object):
     def add_more(self):
         """读取当前元件的数据，并添加新控件"""
         self.node_num = int(self.node_in.text())
+        self.this_elem[0] = self.current_wgt[1].currentText()
         for i in range(2, 5):
             self.this_elem.append(float(self.current_wgt[i].text()))
         if self.this_elem[0] in ['CCCS', 'VCCS', 'VCVS', 'CCVS']:
@@ -212,10 +214,11 @@ class WidgetWindow(object):
             self.widgets.append(self.current_wgt)
             print('全部元件：')
             print(self.elements)
+            self.fun()
             self.create_wgt()
             self.this_elem = [None]
         else:
-            self.this_elem = [self.this_elem[0]]    # 有错误，保留第一项元件类型不变，其它项删掉，不新增输入控件，等待重新输入
+            self.this_elem = list()  # 有错误，保留第一项元件类型不变，其它项删掉，不新增输入控件，等待重新输入
 
     def create_wgt(self):
         """创建新控件"""
@@ -254,10 +257,12 @@ class WidgetWindow(object):
             elemhelp_splt_2.show()
         else:
             # 没越界，就移动坐标到下一个位置
-            if self.this_elem[0] in ['CCCS', 'VCCS', 'VCVS', 'CCVS']:
-                self.current_y += 70
-            else:
-                self.current_y += 40
+            self.current_y += 70
+
+            # if self.this_elem[0] in ['CCCS', 'VCCS', 'VCVS', 'CCVS']:
+            #     self.current_y += 70
+            # else:
+            #     self.current_y += 40
 
         # 按钮不生成新的，只移动
         self.button_splt.move(self.current_x, self.current_y + 60)
@@ -267,11 +272,22 @@ class WidgetWindow(object):
         elemin_splt_2.setOrientation(QtCore.Qt.Horizontal)
         elemin_splt_2.setObjectName("elemin_splt_2")
 
+        def type_choose2(self, text):
+            # 选择元件类型，并删除不必要的输入框
+
+            # infomation = ['电阻', '电导', '电流源', '电压源', 'CCCS', 'VCCS', 'VCVS', 'CCVS', "电容", "电感"]
+            if text not in ['CCCS', 'VCCS', 'VCVS', 'CCVS']:
+                self.current_wgt[0].hide()
+                # self.button_splt.move(self.current_x, self.current_y + 30)
+            else:
+                self.current_wgt[0].show()
+                # self.button_splt.move(self.current_x, self.current_y + 60)
+
         infomation = ['请选择元件', '电阻', '电导', '电流源', '电压源', 'CCCS', 'VCCS', 'VCVS', 'CCVS', "电容", "电感"]
         classchoose_box_2 = QtWidgets.QComboBox(elemin_splt_2)
         classchoose_box_2.setObjectName("classchoose_box_2")
         classchoose_box_2.addItems(infomation)
-        classchoose_box_2.activated[str].connect(self.type_choose)
+        classchoose_box_2.activated[str].connect(type_choose2)
 
         value_in_2 = QtWidgets.QLineEdit(elemin_splt_2)
         value_in_2.setObjectName("value_in_2")
@@ -318,8 +334,28 @@ class WidgetWindow(object):
             self.this_elem = [self.this_elem[0]]
 
     def stop(self):
-        """输入完成。把最后输入的一个元件的信息存储起来，隐藏输入界面，并打开展示界面"""
+        """输入完成。把全部元件的信息检查、存储起来，隐藏输入界面，并打开展示界面"""
         self.node_num = int(self.node_in.text())
+        self.widgets.append(self.current_wgt)
+        # for widget in self.widgets:
+        #     for i in range(2, 5):
+        #         self.this_elem.append(float(widget[i].text()))
+        #     if self.this_elem[0] in ['CCCS', 'VCCS', 'VCVS', 'CCVS']:
+        #         self.this_elem.append(float(self.current_wgt[5].text()))
+        #         self.this_elem.append(float(self.current_wgt[6].text()))
+        #     if self.warnings():  # 没有错误，正常执行
+        #         print('这个元件：')
+        #         print(self.this_elem)
+        #         self.elements.append(self.this_elem)
+        #         self.widgets.append(self.current_wgt)
+        #         print('结点个数： ' + str(self.node_num))
+        #         print('全部元件：')
+        #         print(self.elements)
+        #         self.this_win.hide()
+        #     else:
+        #         self.this_elem = [self.this_elem[0]]  # 有错误，保留第一项元件类型不变，其它项删掉，不新增输入控件，等待重新输入
+
+        self.this_elem[0] = self.current_wgt[1].currentText()
         for i in range(2, 5):
             self.this_elem.append(float(self.current_wgt[i].text()))
         if self.this_elem[0] in ['CCCS', 'VCCS', 'VCVS', 'CCVS']:
@@ -335,7 +371,7 @@ class WidgetWindow(object):
             print(self.elements)
             self.this_win.hide()
         else:
-            self.this_elem = [self.this_elem[0]]  # 有错误，保留第一项元件类型不变，其它项删掉，不新增输入控件，等待重新输入
+            self.this_elem = list()  # 有错误，删掉当前元件信息，等待重新输入
 
     def warnings(self):
         """针对可能出现的数值错误、输入错误等进行报错"""
@@ -366,6 +402,15 @@ class WidgetWindow(object):
                 return my_message_box('元件控制量所在的结点数对取值有误！', '详细信息：元件控制量所在的两个结点数应该互不相同。')
 
         return True
+
+    def fun(self):
+        if self.this_elem[0] in ['CCCS', 'VCCS', 'VCVS', 'CCVS']:
+            def fun1():
+                return True
+        else:
+            def fun1():
+                return False
+        print('这个元件是受控源：', fun1())
 
 
 if __name__ == '__main__':
