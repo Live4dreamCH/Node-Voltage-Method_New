@@ -137,7 +137,7 @@ class WidgetWindow(object):
 
         self.stopputin_bt = QtWidgets.QPushButton(self.button_splt)
         self.stopputin_bt.setObjectName("stopputin_bt")
-        self.stopputin_bt.clicked.connect(self.try_stop)
+        self.stopputin_bt.clicked.connect(self.try_final)
 
         # 主窗口上下栏
         MainWindow.setCentralWidget(self.centralwidget)
@@ -313,36 +313,60 @@ class WidgetWindow(object):
         #     if i != 0:
         #         item.show()
 
-    def try_stop(self):
+    def try_final(self):
         try:
-            self.stop()
+            self.final_input()
         except ValueError as e:
             my_message_box('数值输错了！', '详细信息：' + str(e))
         except BaseException as e:
             my_message_box('其他类型错误：' + e.__class__.__name__ + '！', '详细信息：' + str(e))
         self.this_elem = list()
+        self.final_elements = list()
 
-    def stop(self):
-        """输入完成。把全部元件的信息检查、存储起来，隐藏输入界面，并打开展示界面"""
+    def final_input(self):
+        """最终输入。把全部元件的信息检查、存储起来，隐藏输入界面，并打开展示界面"""
         self.node_num = int(self.node_in.text())
-        self.this_elem = list()
+        self.final_elements = list()
 
-        self.this_elem[0] = self.current_wgt[1].currentText()
-        for i in range(2, 5):
-            self.this_elem.append(float(self.current_wgt[i].text()))
-        if self.this_elem[0] in ['CCCS', 'VCCS', 'VCVS', 'CCVS']:
-            self.this_elem.append(float(self.current_wgt[5].text()))
-            self.this_elem.append(float(self.current_wgt[6].text()))
-        if self.warnings():  # 没有错误，正常执行
-            print('这个元件：')
-            print(self.this_elem)
-            self.elements.append(self.this_elem)
-            print('结点个数： ' + str(self.node_num))
-            print('全部元件：')
-            print(self.elements)
-            self.this_win.hide()
-        else:
-            self.this_elem = list()  # 有错误，删掉当前元件信息，等待重新输入
+        for widget in self.widgets:
+            self.this_elem = list()
+            self.this_elem.append(widget[1].currentText())
+            for i in range(2, 5):
+                self.this_elem.append(float(widget[i].text()))
+            if self.this_elem[0] in ['CCCS', 'VCCS', 'VCVS', 'CCVS']:
+                self.this_elem.append(float(widget[5].text()))
+                self.this_elem.append(float(widget[6].text()))
+
+            if self.warnings():  # 没有错误，正常执行
+                print('这个元件：')
+                print(self.this_elem)
+                self.elements.append(self.this_elem)
+                self.final_elements.append(self.this_elem)
+                print('结点个数：', self.node_num)
+                print('全部元件：')
+                print(self.final_elements)
+                self.this_elem = list()
+            else:
+                self.this_elem = list()  # 有错误，删掉当前元件信息，等待重新输入
+                self.final_elements = list()
+                break
+
+        # self.this_elem[0] = self.current_wgt[1].currentText()
+        # for i in range(2, 5):
+        #     self.this_elem.append(float(self.current_wgt[i].text()))
+        # if self.this_elem[0] in ['CCCS', 'VCCS', 'VCVS', 'CCVS']:
+        #     self.this_elem.append(float(self.current_wgt[5].text()))
+        #     self.this_elem.append(float(self.current_wgt[6].text()))
+        # if self.warnings():  # 没有错误，正常执行
+        #     print('这个元件：')
+        #     print(self.this_elem)
+        #     self.elements.append(self.this_elem)
+        #     print('结点个数： ' + str(self.node_num))
+        #     print('全部元件：')
+        #     print(self.elements)
+        #     self.this_win.hide()
+        # else:
+        #     self.this_elem = list()  # 有错误，删掉当前元件信息，等待重新输入
 
     def warnings(self):
         """针对可能出现的数值错误、输入错误等进行报错"""
