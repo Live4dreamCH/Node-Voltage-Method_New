@@ -55,6 +55,8 @@ class WidgetWindow(object):
         '新添加的控件'
         self.this_elem = list()
         '当前输入好的电路元件'
+        self.success = True
+        '是否成功完成输入'
 
         # 建立主窗口
         MainWindow.setObjectName("MainWindow")
@@ -314,14 +316,19 @@ class WidgetWindow(object):
         #         item.show()
 
     def try_final(self):
+        self.success = True
         try:
             self.final_input()
         except ValueError as e:
             my_message_box('数值输错了！', '详细信息：' + str(e))
+            self.success = False
+            self.this_elem = list()
+            self.final_elements = list()
         except BaseException as e:
             my_message_box('其他类型错误：' + e.__class__.__name__ + '！', '详细信息：' + str(e))
-        self.this_elem = list()
-        self.final_elements = list()
+            self.success = False
+            self.this_elem = list()
+            self.final_elements = list()
 
     def final_input(self):
         """最终输入。把全部元件的信息检查、存储起来，隐藏输入界面，并打开展示界面"""
@@ -347,6 +354,7 @@ class WidgetWindow(object):
                 print(self.final_elements)
                 self.this_elem = list()
             else:
+                self.success = False
                 self.this_elem = list()  # 有错误，删掉当前元件信息，等待重新输入
                 self.final_elements = list()
                 break
