@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5 import QtCore, QtGui, QtWidgets
+import sys  # 系统
+from Calculate import cal
 
 
 class MyMessageBox(QMessageBox):
@@ -329,6 +331,8 @@ class WidgetWindow(object):
             self.success = False
             self.this_elem = list()
             self.final_elements = list()
+        if self.success:
+            cal(self.node_num, self.final_elements)
 
     def final_input(self):
         """最终输入。把全部元件的信息检查、存储起来，隐藏输入界面，并打开展示界面"""
@@ -410,7 +414,6 @@ class WidgetWindow(object):
 if __name__ == '__main__':
     # 显示输入GUI
     import cgitb  # 报错用
-    import sys  # 系统
 
     # import threading
     cgitb.enable()  # 用于GUI程序的调试
