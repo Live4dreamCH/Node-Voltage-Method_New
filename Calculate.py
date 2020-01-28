@@ -12,24 +12,22 @@ def cal(node: int, elements: list):
     """
     rank = node  # 系数矩阵的秩，即未知量个数、方程数
     for ele in elements:
-        if ele[0] in ('VCVS', '电压源', 'CCCS'):  # 部分元件需要增设变量、增加方程
+        if ele[0][0] in ('VCVS', '电压源', 'CCCS'):  # 部分元件需要增设变量、增加方程
             rank += 1
-        elif ele[0] == 'CCVS':
+        elif ele[0][0] == 'CCVS':
             rank += 2
-        ele[2] = int(ele[2])  # 下标只能为整数或者切片，不能为浮点数
-        ele[3] = int(ele[3])
+        ele[1] = (int(ele[1][0]), int(ele[1][1]), int(ele[1][2]))  # 下标只能为整数或者切片，不能为浮点数
         if ele[0] in ('CCCS', 'VCCS', 'VCVS', 'CCVS'):
-            ele[4] = int(ele[4])
-            ele[5] = int(ele[5])
+            ele[2] = (int(ele[2][0]), int(ele[2][1]), int(ele[2][2]))  # 下标只能为整数或者切片，不能为浮点数
     A = np.zeros((rank, rank))
     B = np.zeros((rank, 1))
 
     add = node
     for element in elements:  # 分类别逐个填入元件
-        ty = element[0]
-        vl = element[1]
-        fr = element[2]
-        to = element[3]
+        ty = element[0][0]
+        vl = element[0][1]
+        fr = element[1][0]
+        to = element[1][2]
         # ['请选择元件', '电阻', '电导', '电流源', '电压源', 'CCCS', 'VCCS', 'VCVS', 'CCVS', "电容", "电感"]
         if ty == '电导':
             A[fr][fr] += vl
@@ -56,8 +54,9 @@ def cal(node: int, elements: list):
             B[add][0] += vl
             add += 1
         else:
-            cl_fr = element[4]
-            cl_to = element[5]
+            cl_fr = element[2][0]
+            cl_lb = element[2][1]
+            cl_to = element[2][2]
             if ty == 'VCCS':
                 A[fr][cl_fr] += vl
                 A[fr][cl_to] -= vl
