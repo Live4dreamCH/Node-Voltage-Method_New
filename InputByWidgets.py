@@ -42,7 +42,7 @@ class WidgetWindow(object):
         """把刚开始的控件全部放到主界面上去"""
 
         self.node_num = int()
-        self.final_elements = list()
+        '总结点数'
         self.elements = list()
         '记录电路全部元件信息'
         self.widgets = list()
@@ -93,6 +93,8 @@ class WidgetWindow(object):
         self.label_4.setObjectName("label_4")
         self.label_5 = QtWidgets.QLabel(self.elemhelp_splt)
         self.label_5.setObjectName("label_5")
+        self.label_7 = QtWidgets.QLabel(self.elemhelp_splt)
+        self.label_7.setObjectName("label_7")
         self.label_6 = QtWidgets.QLabel(self.elemhelp_splt)
         self.label_6.setObjectName("label_6")
 
@@ -112,6 +114,9 @@ class WidgetWindow(object):
         self.value_in.setObjectName("value_in")
         self.from_in = QtWidgets.QLineEdit(self.elemin_splt)
         self.from_in.setObjectName("from_in")
+        self.label_in = QtWidgets.QLineEdit(self.elemin_splt)
+        self.label_in.setObjectName("label_in")
+        self.label_in.setPlaceholderText('0')
         self.to_in = QtWidgets.QLineEdit(self.elemin_splt)
         self.to_in.setObjectName("to_in")
 
@@ -124,6 +129,13 @@ class WidgetWindow(object):
         self.ctrlfrom_help.setObjectName("ctrlfrom_help")
         self.ctrlfrom_in = QtWidgets.QLineEdit(self.contral_splt)
         self.ctrlfrom_in.setObjectName("ctrlfrom_in")
+
+        self.ctrl_label_help = QtWidgets.QLabel(self.contral_splt)
+        self.ctrl_label_help.setObjectName("ctrl_label_help")
+        self.ctrl_label_in = QtWidgets.QLineEdit(self.contral_splt)
+        self.ctrl_label_in.setObjectName("ctrl_label_in")
+        self.ctrl_label_in.setPlaceholderText('0')
+
         self.ctrlto_help = QtWidgets.QLabel(self.contral_splt)
         self.ctrlto_help.setObjectName("ctrlto_help")
         self.ctrlto_in = QtWidgets.QLineEdit(self.contral_splt)
@@ -161,8 +173,8 @@ class WidgetWindow(object):
         self.menu.addAction(self.actionhelp)
         self.menubar.addAction(self.menu.menuAction())
 
-        self.current_wgt = [self.contral_splt, self.classchoose_box, self.value_in, self.from_in, self.to_in,
-                            self.ctrlfrom_in, self.ctrlto_in]
+        self.current_wgt = [self.contral_splt, self.classchoose_box, self.value_in, self.from_in, self.label_in,
+                            self.to_in, self.ctrlfrom_in, self.ctrl_label_in, self.ctrlto_in]
         self.widgets.append(self.current_wgt)
 
         self.retranslateUi(MainWindow)
@@ -173,12 +185,14 @@ class WidgetWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "节点电压法智能分析计算"))
         self.putin_help.setText(_translate("MainWindow", "请输入电路元件：（SI）"))
         self.node_help.setText(_translate("MainWindow", "结点数："))
-        self.label_3.setText(_translate("MainWindow", "元件类型："))
-        self.label_4.setText(_translate("MainWindow", "值/系数："))
-        self.label_5.setText(_translate("MainWindow", "from："))
-        self.label_6.setText(_translate("MainWindow", "to："))
-        self.ctrlfrom_help.setText(_translate("MainWindow", "ctrl_from："))
-        self.ctrlto_help.setText(_translate("MainWindow", "ctrl_to："))
+        self.label_3.setText(_translate("MainWindow", "元件类型 "))
+        self.label_4.setText(_translate("MainWindow", "值  "))
+        self.label_5.setText(_translate("MainWindow", "首端"))
+        self.label_7.setText(_translate("MainWindow", "标号"))
+        self.label_6.setText(_translate("MainWindow", "尾端"))
+        self.ctrlfrom_help.setText(_translate("MainWindow", "控制首"))
+        self.ctrl_label_help.setText(_translate("MainWindow", "控制标号"))
+        self.ctrlto_help.setText(_translate("MainWindow", "控制尾"))
         self.addmore_bt.setText(_translate("MainWindow", "继续添加"))
         self.stopputin_bt.setText(_translate("MainWindow", "输入完成"))
         self.menu.setTitle(_translate("MainWindow", "帮助"))
@@ -193,32 +207,56 @@ class WidgetWindow(object):
                 widget[0].hide()
 
     def try_add_more(self):
+        self.success = True
         try:
             self.add_more()
         except ValueError as e:
+            self.success = False
             my_message_box('数值输错了！', '详细信息：' + str(e))
+            self.elements = list()
         except BaseException as e:
+            self.success = False
             my_message_box('其他类型错误：' + e.__class__.__name__ + '！', '详细信息：' + str(e))
+            self.elements = list()
         self.this_elem = list()
+        if self.success:
+            self.create_wgt()
 
     def add_more(self):
         """读取当前元件的数据，并添加新控件"""
         self.node_num = int(self.node_in.text())
-        self.this_elem = list()
-        self.this_elem.append(self.current_wgt[1].currentText())
-        for i in range(2, 5):
-            self.this_elem.append(float(self.current_wgt[i].text()))
-        if self.this_elem[0] in ['CCCS', 'VCCS', 'VCVS', 'CCVS']:
-            self.this_elem.append(float(self.current_wgt[5].text()))
-            self.this_elem.append(float(self.current_wgt[6].text()))
-        if self.warnings():  # 没有错误，正常执行
-            print('这个元件：')
-            print(self.this_elem)
-            self.elements.append(self.this_elem)
-            print('全部元件：')
-            print(self.elements)
-            self.create_wgt()
-        self.this_elem = list()
+        self.elements = list()
+        # self.current_wgt = [contral_splt_2, classchoose_box_2, value_in_2, from_in_2, label_in_2, to_in_2,
+        #                     ctrlfrom_in_2, ctrl_label_in_2, ctrlto_in_2]
+        for widget in self.widgets:
+            self.this_elem = list()
+            value = (widget[1].currentText(), float(widget[2].text()))
+            self.this_elem.append(value)
+            if widget[4].text() == '':
+                edge = (float(widget[3].text()), 0, float(widget[5].text()))
+            else:
+                edge = (float(widget[3].text()), float(widget[4].text()), float(widget[5].text()))
+            self.this_elem.append(edge)
+            if self.this_elem[0][0] in ['CCCS', 'VCCS', 'VCVS', 'CCVS']:
+                if widget[7].text() == '':
+                    ctrl_edge = (float(widget[6].text()), 0, float(widget[8].text()))
+                else:
+                    ctrl_edge = (float(widget[6].text()), float(widget[7].text()), float(widget[8].text()))
+                self.this_elem.append(ctrl_edge)
+
+            if self.warnings(False):  # 没有错误，正常执行
+                print('结点个数：', self.node_num)
+                print('这个元件：')
+                print(self.this_elem)
+                self.elements.append(self.this_elem)
+                print('全部元件：')
+                print(self.elements)
+                self.this_elem = list()
+            else:
+                self.success = False
+                self.this_elem = list()  # 有错误，删掉当前元件信息，等待重新输入
+                self.elements = list()
+                break
 
     def create_wgt(self):
         """创建新控件"""
@@ -246,23 +284,21 @@ class WidgetWindow(object):
             label_8.setObjectName("label_8")
             label_9 = QtWidgets.QLabel(elemhelp_splt_2)
             label_9.setObjectName("label_9")
+            label_11 = QtWidgets.QLabel(elemhelp_splt_2)
+            label_11.setObjectName("label_7")
             label_10 = QtWidgets.QLabel(elemhelp_splt_2)
             label_10.setObjectName("label_10")
 
-            label_7.setText("元件类型：")
-            label_8.setText("值/系数：")
-            label_9.setText("from：")
-            label_10.setText("to：")
+            label_7.setText("元件类型 ")
+            label_8.setText("值  ")
+            label_9.setText("首端")
+            label_11.setText("标号")
+            label_10.setText("尾端")
 
             elemhelp_splt_2.show()
         else:
             # 没越界，就移动坐标到下一个位置
             self.current_y += 70
-
-            # if self.this_elem[0] in ['CCCS', 'VCCS', 'VCVS', 'CCVS']:
-            #     self.current_y += 70
-            # else:
-            #     self.current_y += 40
 
         # 按钮不生成新的，只移动
         self.button_splt.move(self.current_x, self.current_y + 60)
@@ -280,9 +316,11 @@ class WidgetWindow(object):
 
         value_in_2 = QtWidgets.QLineEdit(elemin_splt_2)
         value_in_2.setObjectName("value_in_2")
-        # value_in_2.setText('0')
         from_in_2 = QtWidgets.QLineEdit(elemin_splt_2)
         from_in_2.setObjectName("from_in_2")
+        label_in_2 = QtWidgets.QLineEdit(elemin_splt_2)
+        label_in_2.setObjectName("label_in_2")
+        label_in_2.setPlaceholderText('0')  # 缺省的灰色0
         to_in_2 = QtWidgets.QLineEdit(elemin_splt_2)
         to_in_2.setObjectName("to_in_2")
         # 控制量输入控件组
@@ -294,27 +332,28 @@ class WidgetWindow(object):
         ctrlfrom_help_2.setObjectName("ctrlfrom_help_2")
         ctrlfrom_in_2 = QtWidgets.QLineEdit(contral_splt_2)
         ctrlfrom_in_2.setObjectName("ctrlfrom_in_2")
+
+        ctrl_label_help_2 = QtWidgets.QLabel(contral_splt_2)
+        ctrl_label_help_2.setObjectName("ctrl_label_help_2")
+        ctrl_label_in_2 = QtWidgets.QLineEdit(contral_splt_2)
+        ctrl_label_in_2.setObjectName("ctrl_label_in_2")
+        ctrl_label_in_2.setPlaceholderText('0')
+
         ctrlto_help_2 = QtWidgets.QLabel(contral_splt_2)
         ctrlto_help_2.setObjectName("ctrlto_help_2")
         ctrlto_in_2 = QtWidgets.QLineEdit(contral_splt_2)
         ctrlto_in_2.setObjectName("ctrlto_in_2")
 
-        ctrlfrom_help_2.setText("ctrl_from：")
-        ctrlto_help_2.setText("ctrl_to：")
+        ctrlfrom_help_2.setText("控制首")
+        ctrl_label_help_2.setText("控制标号")
+        ctrlto_help_2.setText("控制尾")
 
-        # new_wgt = [contral_splt_2, classchoose_box_2, value_in_2, from_in_2, to_in_2,
-        #            ctrlfrom_in_2, ctrlto_in_2]
-
-        self.current_wgt = [contral_splt_2, classchoose_box_2, value_in_2, from_in_2, to_in_2,
-                            ctrlfrom_in_2, ctrlto_in_2]
+        self.current_wgt = [contral_splt_2, classchoose_box_2, value_in_2, from_in_2, label_in_2, to_in_2,
+                            ctrlfrom_in_2, ctrl_label_in_2, ctrlto_in_2]
         self.widgets.append(self.current_wgt)
 
         elemin_splt_2.show()
         contral_splt_2.show()
-
-        # for i, item in enumerate(new_wgt):
-        #     if i != 0:
-        #         item.show()
 
     def try_final(self):
         self.success = True
@@ -324,88 +363,101 @@ class WidgetWindow(object):
             my_message_box('数值输错了！', '详细信息：' + str(e))
             self.success = False
             self.this_elem = list()
-            self.final_elements = list()
+            self.elements = list()
         except BaseException as e:
             my_message_box('其他类型错误：' + e.__class__.__name__ + '！', '详细信息：' + str(e))
             self.success = False
             self.this_elem = list()
-            self.final_elements = list()
+            self.elements = list()
         if self.success:
-            cal(self.node_num, self.final_elements)
+            cal(self.node_num, self.elements)
 
     def final_input(self):
         """最终输入。把全部元件的信息检查、存储起来，隐藏输入界面，并打开展示界面"""
         self.node_num = int(self.node_in.text())
-        self.final_elements = list()
-
+        self.elements = list()
+        # self.current_wgt = [contral_splt_2, classchoose_box_2, value_in_2, from_in_2, label_in_2, to_in_2,
+        #                     ctrlfrom_in_2, ctrl_label_in_2, ctrlto_in_2]
         for widget in self.widgets:
             self.this_elem = list()
-            self.this_elem.append(widget[1].currentText())
-            for i in range(2, 5):
-                self.this_elem.append(float(widget[i].text()))
-            if self.this_elem[0] in ['CCCS', 'VCCS', 'VCVS', 'CCVS']:
-                self.this_elem.append(float(widget[5].text()))
-                self.this_elem.append(float(widget[6].text()))
+            value = (widget[1].currentText(), float(widget[2].text()))
+            self.this_elem.append(value)
+            if widget[4].text() == '':
+                edge = (float(widget[3].text()), 0, float(widget[5].text()))
+            else:
+                edge = (float(widget[3].text()), float(widget[4].text()), float(widget[5].text()))
+            self.this_elem.append(edge)
+            if self.this_elem[0][0] in ['CCCS', 'VCCS', 'VCVS', 'CCVS']:
+                if widget[7].text() == '':
+                    ctrl_edge = (float(widget[6].text()), 0, float(widget[8].text()))
+                else:
+                    ctrl_edge = (float(widget[6].text()), float(widget[7].text()), float(widget[8].text()))
+                self.this_elem.append(ctrl_edge)
 
-            if self.warnings():  # 没有错误，正常执行
+            if self.warnings(True):  # 没有错误，正常执行
                 print('这个元件：')
                 print(self.this_elem)
                 self.elements.append(self.this_elem)
-                self.final_elements.append(self.this_elem)
                 print('结点个数：', self.node_num)
                 print('全部元件：')
-                print(self.final_elements)
+                print(self.elements)
                 self.this_elem = list()
             else:
                 self.success = False
                 self.this_elem = list()  # 有错误，删掉当前元件信息，等待重新输入
-                self.final_elements = list()
+                self.elements = list()
                 break
 
-        # self.this_elem[0] = self.current_wgt[1].currentText()
-        # for i in range(2, 5):
-        #     self.this_elem.append(float(self.current_wgt[i].text()))
-        # if self.this_elem[0] in ['CCCS', 'VCCS', 'VCVS', 'CCVS']:
-        #     self.this_elem.append(float(self.current_wgt[5].text()))
-        #     self.this_elem.append(float(self.current_wgt[6].text()))
-        # if self.warnings():  # 没有错误，正常执行
-        #     print('这个元件：')
-        #     print(self.this_elem)
-        #     self.elements.append(self.this_elem)
-        #     print('结点个数： ' + str(self.node_num))
-        #     print('全部元件：')
-        #     print(self.elements)
-        #     self.this_win.hide()
-        # else:
-        #     self.this_elem = list()  # 有错误，删掉当前元件信息，等待重新输入
-
-    def warnings(self):
+    def warnings(self, final):
         """针对可能出现的数值错误、输入错误等进行报错"""
         if self.node_num < 2:
             return my_message_box("总结点数目过少！", '详细信息：电路中，总结点数目应大于1.')
         # elif self.node_num not in range(0, self.node_num)
 
-        if self.this_elem[0] in [None, '请选择元件']:
-            return my_message_box("未选择元件类型！", '详细信息：电路中，每个元件都有其类型和特性。')
+        if self.this_elem[0][0] in [None, '请选择元件']:
+            return my_message_box("未选择元件类型！", '详细信息：电路中，每个元件都有其类型和特性；如想输入短路请输入一阻值为0的电阻，或一电压为0的电压源')
 
-        if (self.this_elem[1] < 0) and (self.this_elem[0] in ['电阻', '电导', "电容", "电感"]):
+        if (self.this_elem[0][1] < 0) and (self.this_elem[0][0] in ['电阻', '电导', "电容", "电感"]):
             # return self.my_message_box(,)
-            return my_message_box("此类元件的值不能为负数！", '详细信息：在本程序中，电阻、电导、电容、电感不能取负值。')
+            return my_message_box("此类元件的值不能为负数！", '详细信息：在本程序中，电阻、电导、电容、电感取负值未经验证。')
 
-        if self.this_elem[2] not in range(0, self.node_num) or self.this_elem[3] not in range(0, self.node_num):
+        if self.this_elem[1][0] not in range(0, self.node_num) or self.this_elem[1][2] not in range(0, self.node_num):
             return my_message_box('元件所在结点数取值有误！', '详细信息：元件所在结点应该为正整数，且在[0,n)中，其中n为总结点数。')
 
-        if self.this_elem[0] in ['CCCS', 'VCCS', 'VCVS', 'CCVS']:
-            if self.this_elem[4] not in range(0, self.node_num) or self.this_elem[5] not in range(0, self.node_num):
+        if self.this_elem[1][0] == self.this_elem[1][2]:
+            return my_message_box('元件所在结点数对取值有误！', '详细信息：元件所在的两个结点数应该互不相同。')
+
+        if self.this_elem[1][1] != int(self.this_elem[1][1]) or self.this_elem[1][1] < 0:
+            return my_message_box('元件标号数取值有误！', '详细信息：元件标号数应该为正整数。')
+
+        for element in self.elements:
+            if (self.this_elem[1][0] == element[1][0] and self.this_elem[1][2] == element[1][2]) \
+                    or (self.this_elem[1][0] == element[1][2] and self.this_elem[1][2] == element[1][0]):
+                if self.this_elem[1][1] == element[1][1]:
+                    return my_message_box('元件标号数取值重复！', '详细信息：元件标号数应该与之前的元件不同。')
+
+        if self.this_elem[0][0] in ['CCCS', 'VCCS', 'VCVS', 'CCVS']:
+            if self.this_elem[2][0] not in range(0, self.node_num) or self.this_elem[2][2] not in range(0,
+                                                                                                        self.node_num):
                 return my_message_box('元件控制量所在结点数取值有误！', '详细信息：元件控制量所在结点应该为正整数，且在[0,'
                                                          'n)中，其中n为总结点数。')
 
-        if self.this_elem[2] == self.this_elem[3]:
-            return my_message_box('元件所在结点数对取值有误！', '详细信息：元件所在的两个结点数应该互不相同。')
-
-        if self.this_elem[0] in ['CCCS', 'VCCS', 'VCVS', 'CCVS']:
-            if self.this_elem[4] == self.this_elem[5]:
+            if self.this_elem[2][0] == self.this_elem[2][2]:
                 return my_message_box('元件控制量所在的结点数对取值有误！', '详细信息：元件控制量所在的两个结点数应该互不相同。')
+
+            if self.this_elem[2][1] != int(self.this_elem[2][1]) or self.this_elem[2][1] < 0:
+                return my_message_box('元件控制量标号数取值有误！', '详细信息：元件控制量标号数应该为正整数。')
+
+            if final:
+                correspondence = False
+                for element in self.elements:
+                    if (self.this_elem[2][0] == element[1][0] and self.this_elem[2][2] == element[1][2]) \
+                            or (self.this_elem[2][0] == element[1][2] and self.this_elem[2][2] == element[1][0]):
+                        if self.this_elem[2][1] == element[1][1]:
+                            correspondence = True
+                            break
+                if not correspondence:
+                    return my_message_box('输入的控制支路不存在！', '详细信息：元件控制量结点数、标号数应该存在。')
 
         return True
 
