@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5 import QtCore, QtGui, QtWidgets
-import sys  # 系统
 from Calculate import cal
 
 
@@ -414,6 +413,7 @@ class WidgetWindow(object):
 if __name__ == '__main__':
     # 显示输入GUI
     import cgitb  # 报错用
+    import sys  # 系统
 
     # import threading
     cgitb.enable()  # 用于GUI程序的调试

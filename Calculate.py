@@ -71,11 +71,12 @@ def cal(node: int, elements: list):
                 A[add][cl_fr] -= vl
                 A[add][cl_to] += vl
                 add += 1
-            elif ty == 'CCCS':  # 存疑：为何可以增加变量而不增加方程？
+            elif ty == 'CCCS':  # 存疑：为何可以增加变量而不增加方程？ 已明白，等待改写。 另外一个问题：若电路的图非简单图，那控制电流到底是哪条支路上的？
                 A[fr][add] += vl
                 A[to][add] -= vl
+
                 add += 1
-            elif ty == 'CCVS':
+            elif ty == 'CCVS':  # 也有问题：它默认控制电流为0V电压源的了
                 A[fr][add] += 1
                 A[to][add] -= 1
                 A[add][fr] += 1
